@@ -1,31 +1,19 @@
-# Dependencies
-node_modules
-.pnp
-.pnp.*
+# Node.js
+node_modules/
+dist/
+dist-tauri/
+.env
+
+# Python
 .venv/
 __pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
 
-# Testing
-/coverage
-
-# Vite & Build artifacts
-dist/
-out/
-build/
-*.tsbuildinfo
-
-# Tauri 2.0
-src-tauri/target/
-src-tauri/gen/
-src-tauri/bin/*.exe
-src-tauri/bin/*.msi
-
-# OS & Misc
+# Mac system files
 .DS_Store
-*.pem
-*.log
-.env*
-.vercel
 
-# Project specific
-Modelfile.backup
+# IDEs
+.vscode/
+.idea/

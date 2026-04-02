@@ -12,6 +12,7 @@ class TranslationState(TypedDict):
     review_status: str
     attempts: int
     mode: str
+    model: str
 
 def format_detector(state: TranslationState):
     # Detect if text contains Markdown markers
@@ -19,39 +20,47 @@ def format_detector(state: TranslationState):
     is_markdown = any(re.search(marker, state['original_text']) for marker in markdown_markers)
     return {"detected_format": "markdown" if is_markdown else "text"}
 
-def translator(state: TranslationState):
-    mode = state.get('mode', 'NATURAL')
-    
-    # Define Mode Profiles
+def get_profile(mode: str):
     profiles = {
         "LITERAL": {
             "params": {"temperature": 0.1, "min_p": 0.01, "repeat_penalty": 1.2},
-            "system": "Traduce de forma exacta, palabra por palabra cuando sea posible, manteniendo terminología técnica estricta."
+            "system": "Translate exactly, word for word when possible, maintaining strict technical terminology. If you need to reason, do it EXCLUSIVELY inside <think></think> tags."
         },
         "NATURAL": {
-            "params": {"temperature": 0.4, "min_p": 0.05}, # Ollama usually handles dynamic range internally or via other params
-            "system": "Traduce con fluidez natural. Evita calcos lingüísticos y prioriza sonar como un nativo en el idioma destino."
+            "params": {"temperature": 0.4, "min_p": 0.05}, 
+            "system": "Translate with natural fluency. Avoid linguistic calques and prioritize sounding like a native in the target language. If you need to reason, do it EXCLUSIVELY inside <think></think> tags."
         },
         "CREATIVO": {
             "params": {"temperature": 0.8, "min_p": 0.1, "mirostat": 2},
-            "system": "Realiza una transcreación. Adapta modismos, refranes y el tono emocional para que encaje perfectamente en la cultura de llegada."
+            "system": "Perform a transcreation. Adapt idioms, proverbs and emotional tone to fit perfectly in the target culture. If you need to reason, do it EXCLUSIVELY inside <think></think> tags."
         }
     }
+    return profiles.get(mode, profiles["NATURAL"])
+
+def translator(state: TranslationState):
+    mode = state.get('mode', 'NATURAL')
+    model = state.get('model', 'salamandra-ta-7b')
     
-    profile = profiles.get(mode, profiles["NATURAL"])
+    profile = get_profile(mode)
     
     llm = OllamaLLM(
-        model="salamandra-ta-7b", 
+        model=model, 
         base_url="http://127.0.0.1:11434",
+        keep_alive=300,
+        system=(
+            f"{profile['system']}\n"
+            f"RULE: If you reason, do it INSIDE <think></think> tags. "
+            f"Outside tags, write ONLY the final translation."
+        ),
         **profile["params"]
     )
     
     # Map short codes
-    lang_map = {"ESP": "Spanish (Castellano)", "CAT": "Catalan (Català)", "ENG": "English"}
+    lang_map = {"ESP": "Espanyol (Castellà)", "CAT": "Català", "ENG": "Anglès"}
     target = lang_map.get(state['target_lang'], state['target_lang'])
     
     # Combine system prompt with instructions
-    full_prompt = f"{profile['system']}\n\nTranslation to {target}:\n{state['original_text']}\n\n"
+    full_prompt = f"Translate to {target}:\n{state['original_text']}"
     
     response = llm.invoke(full_prompt)
     return {"translated_text": response.strip(), "attempts": state.get('attempts', 0) + 1}

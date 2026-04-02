@@ -1,41 +1,45 @@
-# traduccio-Xammar
+# traducció-Xammar
 
-A local, AI-powered translation tool optimized for Catalan, Spanish, and English.
+Una eina de traducció local basada en IA, optimitzada per al català, l'espanyol i l'anglès.
 
-## Features
-- **Local-First**: Runs entirely on your machine via Ollama.
-- **Salamandra Engine**: Uses the `Salamandra-7b-instruct` model optimized for translation.
-- **Markdown Preservation**: Ensures `#`, `**`, and links are kept intact.
-- **Memory Optimized**: Automatically unloads the model from VRAM when the app is minimized.
+## Característiques
+- **Execució Local**: Funciona completament en la teva màquina mitjançant Ollama.
+- **Motor Salamandra**: Utilitza el model `Salamandra-7b-instruct` optimitzat per a la traducció.
+- **Preservació de Markdown**: Garanteix que els títols (`#`), negretes (`**`) i enllaços es mantinguin intactes.
+- **Optimització de Memòria**: Allibera automàticament el model de la VRAM quan no s'utilitza o es demana manualment.
+- **Control de Raonament**: Opció per activar o desactivar el procés de pensament de la IA.
 
-## Setup
+## Configuració
 
 ### 1. Ollama
-Ensure [Ollama](https://ollama.com) is installed and running.
+Assegura't que [Ollama](https://ollama.com) estigui instal·lat i en funcionament.
 
-### 2. Import the Model
-Run the following command to create the model with our custom parameters:
+### 2. Importar el Model
+Executa la següent comanda per crear el model amb els nostres paràmetres personalitzats:
 ```bash
 ollama create salamandra-ta-7b -f Modelfile
 ```
 
-### 3. Backend (Python)
-Ensure you have Python 3.9+ installed.
+### 3. Servidor Backend (Python)
+Assegura't de tenir Python 3.9 o superior instal·lat.
 ```bash
-# Activate virtual environment
+# Activa l'entorn virtual
 source .venv/bin/activate
-# Run the FastAPI server
-python3 -m src-backend.main
+# Executa el servidor FastAPI
+python3 src-backend/main.py
 ```
 
-### 4. Frontend (Tauri/Next.js)
+### 4. Interfície d'Usuari (Tauri/Vite)
 ```bash
-# Install dependencies
+# Instal·la les dependències
 npm install
-# Run in development mode
-npm run tauri dev
+# Executa en mode desenvolupament
+npm run dev
 ```
 
-## Security
-- API communication restricted to `127.0.0.1`.
-- Built-in Markdown guardrails to prevent format escaping.
+## Seguretat
+- La comunicació amb l'API està restringida a `127.0.0.1`.
+- Proteccions de Markdown integrades per evitar deformacions del format original.
+
+## Nota sobre els Models de Raonament
+Els models dissenyats específicament per a raonament (com la sèrie R1 o similars) seguiran realitzant el seu procés de pensament intern encara que l'opció de "Raonament" estigui en OFF a la interfície. Això és inherent a la seva arquitectura i pot fer que la traducció trigui més temps del que és habitual en models estàndard.
