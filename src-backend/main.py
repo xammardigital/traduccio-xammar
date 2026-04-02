@@ -29,6 +29,26 @@ class TranslationResponse(BaseModel):
     detected_format: str
     status: str
 
+# Startup hook to check dependencies
+@app.on_event("startup")
+async def startup_event():
+    print("\n" + "="*50)
+    print("🚀 truducción-Xammar Backend")
+    print("="*50)
+    
+    # Check Ollama
+    async with httpx.AsyncClient() as client:
+        try:
+            response = await client.get("http://127.0.0.1:11434/api/tags", timeout=2.0)
+            if response.status_code == 200:
+                print("✅ [Ollama] Connectat correctament")
+            else:
+                print("⚠️ [Ollama] Resposta inesperada: {response.status_code}")
+        except Exception:
+            print("\n❌ [ERROR] No s'ha pogut connectar amb Ollama!")
+            print("👉 Assegura't que Ollama està instal·lat i OBERT.")
+            print("👉 Descarrega'l a: https://ollama.com\n")
+
 @app.get("/models")
 async def get_models():
     try:

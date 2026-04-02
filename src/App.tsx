@@ -11,7 +11,8 @@ import {
   RotateCcw,
   Loader2,
   Square,
-  Brain
+  Brain,
+  Copy
 } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -30,10 +31,10 @@ function App() {
   const [availableModels, setAvailableModels] = useState<string[]>(['salamandra-ta-7b']);
   const [isTranslating, setIsTranslating] = useState(false);
   const [loadingMsg, setLoadingMsg] = useState<string | null>(null);
-  const [copiedRaw, setCopiedRaw] = useState(false);
-  const [copiedMarkdown, setCopiedMarkdown] = useState(false);
+  const [copied, setCopied] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
   const [useReasoning, setUseReasoning] = useState(false);
+  const [hasError, setHasError] = useState(false);
   const [abortController, setAbortController] = useState<AbortController | null>(null);
 
   useEffect(() => {
@@ -45,9 +46,13 @@ function App() {
           setAvailableModels(models);
           const defaultModel = models.find((m: string) => m.toLowerCase().includes('salamandra-ta-7b')) || models[0];
           setSelectedModel(defaultModel);
+          setHasError(false);
+        } else {
+          setHasError(true);
         }
       } catch (err) {
         console.error('Failed to fetch models', err);
+        setHasError(true);
       }
     };
     fetchModels();
@@ -242,16 +247,11 @@ function App() {
     }
   };
 
-  const copyToClipboard = async (text: string, type: 'raw' | 'markdown') => {
+  const copyToClipboard = async (text: string) => {
     try {
       await navigator.clipboard.writeText(text);
-      if (type === 'raw') {
-        setCopiedRaw(true);
-        setTimeout(() => setCopiedRaw(false), 2000);
-      } else {
-        setCopiedMarkdown(true);
-        setTimeout(() => setCopiedMarkdown(false), 2000);
-      }
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error('Copy failed', err);
     }
@@ -270,6 +270,37 @@ function App() {
         <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center gap-4 animate-in fade-in duration-300">
           <Loader2 className="w-10 h-10 text-rose-500 animate-spin" />
           <p className="text-sm font-mono tracking-widest text-white uppercase">{loadingMsg}</p>
+        </div>
+      )}
+
+      {/* Error Overlay */}
+      {!loadingMsg && hasError && (
+        <div className="fixed inset-0 z-[110] bg-[#0a0a0c] flex flex-col items-center justify-center p-8 text-center animate-in zoom-in-95 duration-300">
+           <div className="w-20 h-20 rounded-full bg-rose-500/10 flex items-center justify-center mb-6">
+             <Cpu className="w-10 h-10 text-rose-500 animate-pulse" />
+           </div>
+           <h2 className="text-2xl font-bold text-white mb-2">Dependències No Trobades</h2>
+           <p className="text-neutral-400 max-w-md mb-8">
+             No s'ha pogut connectar amb el servidor backend o amb l'Ollama. 
+             Assegura't de que tot està instal·lat i en funcionament.
+           </p>
+           <div className="flex flex-col gap-3 w-full max-w-xs">
+             <div className="bg-white/5 border border-white/10 rounded-xl p-4 text-left text-sm">
+                <p className="font-bold text-white mb-1">Passos a seguir:</p>
+                <ol className="list-decimal list-inside text-neutral-500 space-y-1">
+                  <li>Obre <b>Ollama</b> i verifica que funciona</li>
+                  <li>Executa <b>npm start</b> a la terminal</li>
+                  <li>Si és el primer cop, executa <b>./start.sh</b></li>
+                </ol>
+             </div>
+             <button 
+               onClick={() => window.location.reload()}
+               className="mt-4 flex items-center justify-center gap-2 bg-rose-600 hover:bg-rose-500 text-white font-bold py-3 px-6 rounded-xl transition-all"
+             >
+               <RotateCcw className="w-4 h-4" />
+               Reintentar
+             </button>
+           </div>
         </div>
       )}
 
@@ -418,18 +449,13 @@ function App() {
                 ))}
               </div>
               <button
-                onClick={() => copyToClipboard(translatedText, 'markdown')}
-                className={cn("px-3 py-1.5 rounded-lg text-xs border border-white/10 transition-all",
-                  copiedMarkdown ? "bg-emerald-500 text-black font-bold" : "text-neutral-400 hover:bg-neutral-800")}
+                onClick={() => copyToClipboard(translatedText)}
+                disabled={!translatedText}
+                className={cn("flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs border border-white/10 transition-all",
+                  copied ? "bg-white text-black font-bold" : "text-neutral-400 hover:bg-neutral-800 disabled:opacity-30 disabled:cursor-not-allowed")}
               >
-                {copiedMarkdown ? "Copiat!" : "Markdown"}
-              </button>
-              <button
-                onClick={() => copyToClipboard(translatedText, 'raw')}
-                className={cn("px-3 py-1.5 rounded-lg text-xs border border-white/10 transition-all",
-                  copiedRaw ? "bg-white text-black font-bold" : "text-neutral-400 hover:bg-neutral-800")}
-              >
-                {copiedRaw ? "Copiat!" : "Raw"}
+                {copied ? <CheckCircle2 className="w-3 h-4" /> : <Copy className="w-3 h-4" />}
+                {copied ? "Copiat!" : "Copiar"}
               </button>
             </div>
           </div>

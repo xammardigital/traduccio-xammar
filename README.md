@@ -9,7 +9,21 @@ Una eina de traducció local basada en IA, optimitzada per al català, l'espanyo
 - **Optimització de Memòria**: Allibera automàticament el model de la VRAM quan no s'utilitza o es demana manualment.
 - **Control de Raonament**: Opció per activar o desactivar el procés de pensament de la IA.
 
-## Configuració
+## Instal·lació Ràpida (Recomanat)
+
+Si tens Mac o Linux, el més fàcil és fer servir el nostre script d'automatització:
+
+```bash
+# 1. Clona el repositori i entra-hi
+# 2. Executa l'script de llançament
+./start.sh
+```
+
+Aquest script comprovarà si tens les dependències de Python i Node.js instal·lades i engegarà l'aplicació per tu.
+
+---
+
+## Instal·lació Manual
 
 ### 1. Ollama
 Assegura't que [Ollama](https://ollama.com) estigui instal·lat i en funcionament.
@@ -20,21 +34,11 @@ Executa la següent comanda per crear el model amb els nostres paràmetres perso
 ollama create salamandra-ta-7b -f Modelfile
 ```
 
-### 3. Servidor Backend (Python)
-Assegura't de tenir Python 3.9 o superior instal·lat.
-```bash
-# Activa l'entorn virtual
-source .venv/bin/activate
-# Executa el servidor FastAPI
-python3 src-backend/main.py
-```
+### 3. Arrencar tot el sistema (Single Command)
+Un cop tinguis les dependències instal·lades (`pip install` i `npm install`), pots engegar tant el servidor com la interfície amb una sola comanda:
 
-### 4. Interfície d'Usuari (Tauri/Vite)
 ```bash
-# Instal·la les dependències
-npm install
-# Executa en mode desenvolupament
-npm run dev
+npm start
 ```
 
 ## Seguretat
