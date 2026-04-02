@@ -48,12 +48,30 @@ Un cop tinguis les dependències instal·lades (`pip install` i `npm install`), 
 npm start
 ```
 
-## Agraïments i Crèdits
-Volem expressar el nostre agraïment a la comunitat d'IA i, especialment, a **Henry Navarro** per la seva feina de quantització del model Salamandra-7b-instruct mitjançant `llama.cpp`. Sense la seva contribució, l'execució local d'aquest motor no seria tan eficient.
+## Autoria i Crèdits
 
-**Contacte de l'autor del model:**
+### Autors de l'Eina
+Aquesta aplicació de traducció local ha estat desenvolupada per:
+- **Abel Cabrerizo Cortés** ([abel.cabrerizo@xammardigital.cat](mailto:abel.cabrerizo@xammardigital.cat)) - **Xammar Digital**
+- **Antigravity** (AI Coding Assistant by Google DeepMind)
+
+### Autors del Model (Salamandra)
+El motor de traducció utilitza el model **Salamandra-7b**, creat per la **Unitat de Tecnologies del Llenguatge del Barcelona Supercomputing Center (BSC)**.
+- 📧 **Contacte BSC**: langtech@bsc.es
+- © **Copyright**: Copyright(c) 2024 by Language Technologies Unit, Barcelona Supercomputing Center.
+
+### Finançament i Suport
+Aquest projecte es beneficia de la recerca finançada per:
+- El **Govern de la Generalitat de Catalunya** a través del **Projecte Aina**.
+- El Ministerio para la Transformación Digital y de la Función Pública (Projecte ILENIA) - Finançat per la Unió Europea (**NextGenerationEU**).
+
+### Agraïments Especials
+Volem expressar el nostre agraïment especial a **Henry Navarro** per la seva feina de quantització del model Salamandra-7b-instruct mitjançant `llama.cpp`.
 - 🌐 **Web**: [henrynavarro.org](https://henrynavarro.org)
 - 📧 **Email**: contact@henrynavarro.org
+
+## Avis Legal (Disclaimer)
+Tingueu en compte que el model pot contenir biaixos o altres distorsions no intencionades. Com a propietari i creador del model, el Barcelona Supercomputing Center no es fa responsable dels resultats derivats de l'ús per part de tercers. L'ús d'aquesta eina implica la responsabilitat de l'usuari final en la mitigació de riscos i el compliment de la normativa vigent en matèria d'Intel·ligència Artificial.
 
 ## Seguretat
 - La comunicació amb l'API està restringida a `127.0.0.1`.
