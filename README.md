@@ -29,7 +29,14 @@ Aquest script comprovarà si tens les dependències de Python i Node.js instal·
 Assegura't que [Ollama](https://ollama.com) estigui instal·lat i en funcionament.
 
 ### 2. Importar el Model
-Executa la següent comanda per crear el model amb els nostres paràmetres personalitzats:
+El motor principal d'aquesta aplicació és el model **Salamandra-7b-instruct**, un model optimitzat per a la traducció.
+
+Pots descarregar-lo directament des d'Ollama:
+```bash
+ollama run hdnh2006/salamandra-7b-instruct
+```
+
+O si prefereixes crear la nostra versió personalitzada (opcional):
 ```bash
 ollama create salamandra-ta-7b -f Modelfile
 ```
@@ -40,6 +47,13 @@ Un cop tinguis les dependències instal·lades (`pip install` i `npm install`), 
 ```bash
 npm start
 ```
+
+## Agraïments i Crèdits
+Volem expressar el nostre agraïment a la comunitat d'IA i, especialment, a **Henry Navarro** per la seva feina de quantització del model Salamandra-7b-instruct mitjançant `llama.cpp`. Sense la seva contribució, l'execució local d'aquest motor no seria tan eficient.
+
+**Contacte de l'autor del model:**
+- 🌐 **Web**: [henrynavarro.org](https://henrynavarro.org)
+- 📧 **Email**: contact@henrynavarro.org
 
 ## Seguretat
 - La comunicació amb l'API està restringida a `127.0.0.1`.
