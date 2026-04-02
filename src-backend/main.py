@@ -93,10 +93,12 @@ async def translate(request: TranslationRequest):
         )
         
         # Map short codes
-        lang_map = {"ESP": "Espanyol (Castellà)", "CAT": "Català", "ENG": "Anglès"}
+        lang_map = {"ESP": "Spanish (Español)", "CAT": "Català", "ENG": "English"}
         target = lang_map.get(request.target_lang, request.target_lang)
         
-        full_prompt = f"Translate to {target}:\n{request.text}"
+        print(f"--- [Traducció] De: AUTO -> A: {target} (Mode: {request.mode}) ---")
+        
+        full_prompt = f"Translate the following text to {target}:\n\n{request.text}"
         
         # Stream from LLM
         for chunk in llm.stream(full_prompt):
