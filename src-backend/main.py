@@ -6,12 +6,12 @@ import httpx
 
 app = FastAPI()
 
-# Enable CORS for local development
+# Enable CORS for local development (Strict)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Restrict this to 127.0.0.1 in production
+    allow_origins=["http://localhost:5173", "tauri://localhost", "http://127.0.0.1:5173"],
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"],
 )
 
