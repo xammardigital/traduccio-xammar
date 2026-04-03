@@ -65,11 +65,19 @@ Per disseny, `traducció-Xammar` no persisteix cap informació a disc:
 - **In-Memory Only**: El text enviat es processa a la memòria RAM/VRAM i s'esborra immediatament després del streaming.
 - **No Logs**: Tant FastAPI com Uvicorn estan configurats per emetre logs només per `STDOUT` (visualitzables en consola durant el desenvolupament), però no es generen fitxers de registre al sistema operatiu.
 
-## 6. Estratègia de Verificació (Testing)
-Com a projecte d'alta seguretat, la validació es basa en:
-- **Auditoria Estàtica**: Ús de l'entorn de treball de IA per a detectar fallades de CSP i CORS.
-- **Manual Verification**: Protocol d'auditoria manual del port 8000 (`lsof -i`) per confirmar el binding correcte.
-- **Linting**: Verificació de tipus i seguretat en els fitxers de configuració de Tauri.
+## 6. Estratègia de Verificació Automàtica (QA)
+Per garantir la sostenibilitat i el blindatge de la solució, s'ha implementat una suite de tests automatitzada (`pytest`):
+
+- **Regressió de CORS (`test_cors.py`)**: S'audita automàticament cada build per assegurar que el binding a `127.0.0.1` no s'obre accidentalment a orígens externs.
+- **Integració d'Endpoints (`test_endpoints.py`)**: Verificació del camí crític UI-Sidecar mitjançant moking asíncron, garantint la disponibilitat dels serveis fins i tot sense connexió amb Ollama.
+- **Test de Càrrega de Streaming (`test_load.py`)**: Micro-test de concurrència asíncrona per validar que l'App suporta múltiples peticions de traducció sense bloqueig de xarxa.
+
+### 6.1 Execució de Qualitat
+L'enginyer de revisió pot executar el protocol de qualitat següent:
+```bash
+./run_tests.sh
+```
+Aquest script garanteix que el codi segueix complint amb els estàndards de **Xammar Digital** abans de qualsevol nou desplagament.
 
 ---
 

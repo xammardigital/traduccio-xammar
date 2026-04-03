@@ -17,3 +17,12 @@ __pycache__/
 # IDEs
 .vscode/
 .idea/
+
+# PyInstaller / Build Artifacts
+build/
+*.spec
+
+# AI / Agents metadata
+AGENTS.md
+CLAUDE.md
+.gemini/
