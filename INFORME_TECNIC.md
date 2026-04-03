@@ -17,6 +17,23 @@ L'aplicació utilitza una pila tecnològica moderna de 3 capes per garantir un r
 - **Backend (Sidecar)**: [FastAPI (Python 3.9)](https://fastapi.tiangolo.com/). Un servidor asíncron d'alt rendiment que actua com a pont entre la UI i el motor d'IA.
 - **Motor d'IA**: [Ollama](https://ollama.com/) amb el model **Salamandra-7b**, optimitzat pel BSC i quantitzat per Henry Navarro.
 
+### 2.1 Diagrama de Flux de Dades (Data Flow)
+A continuació es detalla com viatja la informació des de la interacció de l'usuari fins a l'execució del model:
+
+```mermaid
+graph TD
+    User["Interacció Usuari (App.tsx)"] -->|Fetch API (127.0.0.1:8000)| Backend["FastAPI Sidecar (main.py)"]
+    Backend -->|LangChain Streaming| Ollama["Ollama Engine (Local)"]
+    Ollama -->|Salamandra-7b (VRAM)| Translate["Generació de Text"]
+    Translate -->|Stream Response| Backend
+    Backend -->|SSE (Server-Sent Events)| UI["Previsualització UI (React)"]
+    
+    subgraph "Capes de Seguretat"
+        Backend -.- CORS["Strict CORS Whitelist"]
+        UI -.- CSP["Strict CSP Policy"]
+    end
+```
+
 ## 3. Arquitectura de Seguretat (Zero-Trust)
 
 ### 3.1 Aïllament de Xarxa
@@ -30,24 +47,29 @@ L'ús de Python com a **Sidecar** binari permet un control total sobre la xarxa:
 - **Script Blocking**: Configuració de `.npmrc` amb `ignore-scripts=true` per evitar l'execució de codi natiu maliciós durant la instal·lació de dependències.
 - **Build Hermètic**: El backend Python es compila mitjançant `PyInstaller` en un binari standalone, evitant la necessitat de dependències de Python a la màquina de l'usuari final.
 
-## 4. Flux de Dades i Privacitat
-1. L'usuari introdueix text a la UI (React).
-2. La petició es transmet de forma xifrada pel bridge de Tauri (IPC) cap al Backend Sidecar (FastAPI).
-3. El Sidecar utilitza el protocol de streaming (SSE) per comunicar-se amb Ollama localment.
-4. **Data Sovereignty**: Cap fragment de text o metadada surt mai de l'estació de treball de l'usuari cap a internet.
+## 4. Gestió d'Errors i Resiliència
 
-## 5. Dependències Crítiques
+### 4.1 Fallback de Dependències
+L'aplicació implementa una capa de verificació d'estat (health check) en el muntatge del component principal (`App.tsx`):
+- **Models Check**: Es realitza un `GET /models` al backend. Si la connexió falla (Sidecar no actiu) o el backend no pot parlar amb Ollama, es mostra una interfície d'error crítica ("Dependències No Trobades") que bloqueja l'ús fins a la resolució.
 
-### Frontend (npm)
-- `@tauri-apps/api`: Comunicació segura amb el core de Tauri.
-- `react-markdown`: Renderitzat segur de contingut.
-- `lucide-react`: Iconografia de codi lliure.
+### 4.2 Cicle de Vida del Sidecar
+Tauri és el responsable de l'orquestració dels processos:
+- **Spawning**: El binari Python s'inicia durant el `setup` del core de Rust.
+- **Auto-Cleanup**: En tancar l'App, Tauri s'assegura de matar el procés fill del Sidecar per evitar processos zombis i alliberar el port 8000.
 
-### Backend (Python)
-- `fastapi`: Framework API.
-- `langgraph`: Orquestració de la lògica de traducció.
-- `langchain-ollama`: Integració oficial amb el motor LLM.
-- `pyinstaller`: Envasat i blindatge del binari del Sidecar.
+## 5. Flux de Dades i Privacitat
+
+### 5.1 Política de Zero-Log
+Per disseny, `traducció-Xammar` no persisteix cap informació a disc:
+- **In-Memory Only**: El text enviat es processa a la memòria RAM/VRAM i s'esborra immediatament després del streaming.
+- **No Logs**: Tant FastAPI com Uvicorn estan configurats per emetre logs només per `STDOUT` (visualitzables en consola durant el desenvolupament), però no es generen fitxers de registre al sistema operatiu.
+
+## 6. Estratègia de Verificació (Testing)
+Com a projecte d'alta seguretat, la validació es basa en:
+- **Auditoria Estàtica**: Ús de l'entorn de treball de IA per a detectar fallades de CSP i CORS.
+- **Manual Verification**: Protocol d'auditoria manual del port 8000 (`lsof -i`) per confirmar el binding correcte.
+- **Linting**: Verificació de tipus i seguretat en els fitxers de configuració de Tauri.
 
 ---
 
