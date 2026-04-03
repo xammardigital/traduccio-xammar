@@ -23,15 +23,15 @@ def format_detector(state: TranslationState):
 def get_profile(mode: str):
     profiles = {
         "LITERAL": {
-            "params": {"temperature": 0.1, "min_p": 0.01, "repeat_penalty": 1.2},
+            "params": {"temperature": 0.1, "min_p": 0.01, "repeat_penalty": 1.2, "num_predict": 4096, "num_ctx": 8192},
             "system": "Translate exactly, word for word when possible, maintaining strict technical terminology. If you need to reason, do it EXCLUSIVELY inside <think></think> tags."
         },
         "NATURAL": {
-            "params": {"temperature": 0.4, "min_p": 0.05}, 
+            "params": {"temperature": 0.4, "min_p": 0.05, "num_predict": 4096, "num_ctx": 8192}, 
             "system": "Translate with natural fluency. Avoid linguistic calques and prioritize sounding like a native in the target language. If you need to reason, do it EXCLUSIVELY inside <think></think> tags."
         },
         "CREATIVO": {
-            "params": {"temperature": 0.8, "min_p": 0.1, "mirostat": 2},
+            "params": {"temperature": 0.8, "min_p": 0.1, "mirostat": 2, "num_predict": 4096, "num_ctx": 8192},
             "system": "Perform a transcreation. Adapt idioms, proverbs and emotional tone to fit perfectly in the target culture. If you need to reason, do it EXCLUSIVELY inside <think></think> tags."
         }
     }

@@ -89,6 +89,8 @@ async def translate(request: TranslationRequest):
             base_url="http://127.0.0.1:11434",
             keep_alive=300,
             system=f"{profile['system']}\n{reasoning_instruction}",
+            num_predict=4096,
+            num_ctx=8192,
             **profile["params"]
         )
         
