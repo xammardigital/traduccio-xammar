@@ -41,12 +41,41 @@ O si prefereixes crear la nostra versió personalitzada (opcional):
 ollama create salamandra-ta-7b -f Modelfile
 ```
 
-### 3. Arrencar tot el sistema (Single Command)
-Un cop tinguis les dependències instal·lades (`pip install` i `npm install`), pots engegar tant el servidor com la interfície amb una sola comanda:
+### 3. Arrencar el sistema
 
+Tens dues maneres de fer anar l'aplicació:
+
+#### A) Mode Desenvolupament (Ràpid)
+Ideal si vols fer canvis al codi de Python o React i veure'ls al moment:
 ```bash
 npm start
 ```
+
+#### B) Mode App d'Escriptori (Sidecar)
+Per provar l'aplicació tal com serà en producció, utilitzant el motor Python ja compilat:
+```bash
+npm run tauri dev
+```
+
+## 🧪 Verificació i Qualitat
+Hem implementat una suite de tests automatitzada per garantir que la seguretat i la connectivitat del projecte són sempre 10/10:
+
+```bash
+./run_tests.sh
+```
+
+## 🏗️ Arquitectura i Seguretat
+Aquest projecte segueix un enfocament de **seguretat Zero-Trust**:
+- **Sidecar Isolation**: El motor de Python s'executa com un procés aïllat gestionat per Tauri.
+- **Network Hardening**: El backend només accepta peticions des de `127.0.0.1`.
+- **In-Memory Only**: Per privacitat, tota la traducció es processa a la memòria RAM/VRAM i no es genera cap log a disc (Zero-Log Policy).
+
+## 🚀 Distribució
+Per generar l'instal·lador final (`.dmg` o `.app` per a Mac):
+```bash
+npm run tauri build
+```
+L'executable resultant inclourà el motor de Python integrat, sense necessitat de dependències externes.
 
 ## Autoria i Crèdits
 
